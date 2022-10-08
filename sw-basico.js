@@ -1,6 +1,3 @@
-
-
-
 self.addEventListener('fetch', event => {
 
     const offlineResp = new Response(`
@@ -12,7 +9,7 @@ self.addEventListener('fetch', event => {
     `);
 
     // const offlineResp = new Response(`
-    
+
     // <!DOCTYPE html>
     // <html lang="en">
     // <head>
@@ -23,9 +20,9 @@ self.addEventListener('fetch', event => {
 
     // </head>
     // <body class="container p-3">
-    
+
     // <h1>Offline Mode</h1>
-    
+
     // </body>
     // </html>
     // `, {
@@ -39,9 +36,9 @@ self.addEventListener('fetch', event => {
 
 
     const resp = fetch(event.request)
-                    .catch( () => offlineResp );
+        .catch(() => offlineResp);
 
 
-    event.respondWith( resp  );
+    event.respondWith(resp);
 
 });

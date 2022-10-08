@@ -1,29 +1,27 @@
-
-
 // const CACHE_NAME = 'cache-1';
-const CACHE_STATIC_NAME  = 'static-v2';
+const CACHE_STATIC_NAME = 'static-v2';
 const CACHE_DYNAMIC_NAME = 'dynamic-v1';
 const CACHE_INMUTABLE_NAME = 'inmutable-v1';
 
 const CACHE_DYNAMIC_LIMIT = 50;
 
 
-function limpiarCache( cacheName, numeroItems ) {
+function limpiarCache(cacheName, numeroItems) {
 
 
-    caches.open( cacheName )
-        .then( cache => {
+    caches.open(cacheName)
+        .then(cache => {
 
             return cache.keys()
-                .then( keys => {
-                    
-                    if ( keys.length > numeroItems ) {
-                        cache.delete( keys[0] )
-                            .then( limpiarCache(cacheName, numeroItems) );
+                .then(keys => {
+
+                    if (keys.length > numeroItems) {
+                        cache.delete(keys[0])
+                            .then(limpiarCache(cacheName, numeroItems));
                     }
                 });
 
-            
+
         });
 }
 
@@ -33,8 +31,8 @@ function limpiarCache( cacheName, numeroItems ) {
 self.addEventListener('install', e => {
 
 
-    const cacheProm = caches.open( CACHE_STATIC_NAME )
-        .then( cache => {
+    const cacheProm = caches.open(CACHE_STATIC_NAME)
+        .then(cache => {
 
             return cache.addAll([
                 '/',
@@ -45,36 +43,36 @@ self.addEventListener('install', e => {
                 '/img/no-img.jpg'
             ]);
 
-        
+
         });
 
-    const cacheInmutable = caches.open( CACHE_INMUTABLE_NAME )
-            .then( cache => cache.add('https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css'));
+    const cacheInmutable = caches.open(CACHE_INMUTABLE_NAME)
+        .then(cache => cache.add('https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css'));
 
 
-    e.waitUntil( Promise.all([cacheProm, cacheInmutable]) );
+    e.waitUntil(Promise.all([cacheProm, cacheInmutable]));
 
 });
 
 
 
-self.addEventListener('fetch', e =>{
+self.addEventListener('fetch', e => {
 
     // 5- Cache & Network Race
 
-    const respuesta = new Promise( (resolve, reject) =>{
+    const respuesta = new Promise((resolve, reject) => {
 
         let rechazada = false;
 
         const falloUnaVez = () => {
 
-            if ( rechazada ) {
-                
-                if ( /\.(png|jpg)$/i.test( e.request.url ) ) {
+            if (rechazada) {
 
-                    resolve( caches.match('/img/no-img.jpg')  );
+                if (/\.(png|jpg)$/i.test(e.request.url)) {
 
-                } else { 
+                    resolve(caches.match('/img/no-img.jpg'));
+
+                } else {
                     reject('No se encontro respuesta');
                 }
 
@@ -88,24 +86,24 @@ self.addEventListener('fetch', e =>{
 
 
 
-        fetch( e.request ).then( res => {
+        fetch(e.request).then(res => {
             res.ok ? resolve(res) : falloUnaVez();
-        }).catch( falloUnaVez );
+        }).catch(falloUnaVez);
 
 
-        caches.match( e.request ).then( res => {
-            res ? resolve( res ) : falloUnaVez();
-        }).catch( falloUnaVez );
+        caches.match(e.request).then(res => {
+            res ? resolve(res) : falloUnaVez();
+        }).catch(falloUnaVez);
 
 
     });
 
 
-    e.respondWith( respuesta );
+    e.respondWith(respuesta);
 
 
 
-    
+
     // 4- Cache with network update
     // Rendimiento es crítico
     // Siempre estarán un paso atrás
@@ -183,8 +181,3 @@ self.addEventListener('fetch', e =>{
     // e.respondWith( caches.match( e.request ) );
 
 });
-
-
-
-
-
